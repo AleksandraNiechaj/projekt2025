@@ -1,0 +1,16 @@
+{# templates/admin/profile.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mój profil{% endblock %}
+
+{% block body %}
+    <h1>Edytuj profil administratora</h1>
+
+    {{ form_start(profileForm) }}
+    {{ form_row(profileForm.email) }}
+    {{ form_row(profileForm.username) }}
+    <button class="btn btn-success">Zapisz zmiany</button>
+    {{ form_end(profileForm) }}
+
+    <a href="{{ path('admin_change_password') }}" class="btn btn-link mt-3">Zmień hasło</a>
+{% endblock %}

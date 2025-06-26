@@ -1,5 +1,5 @@
 <?php
-
+// src/Security/LoginFormAuthenticator.php
 namespace App\Security;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,7 +29,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function supports(Request $request): bool
     {
-        // Obsługuj tylko POST na ścieżce logowania
         return $request->attributes->get('_route') === 'app_login'
             && $request->isMethod('POST');
     }
@@ -51,15 +50,18 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // Jeśli był zapisany pierwotny cel, przekieruj tam
+        // 1) jeśli był target path, tam przekieruj
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // W przeciwnym razie na listę przepisów
-        return new RedirectResponse(
-            $this->urlGenerator->generate('app_recipe_index')
-        );
+        // 2) jeśli admin → profil
+        if (in_array('ROLE_ADMIN', $token->getRoleNames(), true)) {
+            return new RedirectResponse($this->urlGenerator->generate('admin_profile'));
+        }
+
+        // 3) inaczej na listę przepisów
+        return new RedirectResponse($this->urlGenerator->generate('app_recipe_index'));
     }
 
     protected function getLoginUrl(Request $request): string
