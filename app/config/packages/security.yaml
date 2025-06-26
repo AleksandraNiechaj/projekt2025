@@ -39,8 +39,16 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # tylko admin może tworzyć/edytować/usunąć przepisy
+        - { path: ^/recipe/new,      roles: ROLE_ADMIN }
+        - { path: ^/recipe/\d+/edit, roles: ROLE_ADMIN }
+        - { path: ^/recipe/\d+$,     methods: [ POST ], roles: ROLE_ADMIN }
+        # tylko admin może tworzyć/edytować/usunąć kategorie
+        - { path: ^/category/new,      roles: ROLE_ADMIN }
+        - { path: ^/category/\d+/edit, roles: ROLE_ADMIN }
+        - { path: ^/category/\d+$,     methods: [ POST ], roles: ROLE_ADMIN }
+        # tylko admin może usuwać komentarze
+        - { path: ^/comment/\d+/delete, roles: ROLE_ADMIN }
 
 when@test:
     security:

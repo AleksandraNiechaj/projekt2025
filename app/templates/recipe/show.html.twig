@@ -7,12 +7,23 @@
     <p class="text-muted">{{ recipe.createdAt|date('Y-m-d H:i') }}</p>
     <div class="mb-4">{{ recipe.content|nl2br }}</div>
 
-    {# …inne informacje o przepisie… #}
+    {# Edycja / usuwanie przepisu #}
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_recipe_edit', {id: recipe.id}) }}" class="btn btn-outline-secondary me-2">
+            Edytuj przepis
+        </a>
+        <form method="post"
+              action="{{ path('app_recipe_delete', {id: recipe.id}) }}"
+              style="display:inline"
+              onsubmit="return confirm('Na pewno usunąć przepis?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+            <button class="btn btn-danger">Usuń przepis</button>
+        </form>
+        <hr class="my-4">
+    {% endif %}
 
-    <hr>
-
+    {# Komentarze #}
     <h2>Komentarze</h2>
-
     <ul class="list-unstyled">
         {% for c in recipe.comments %}
             <li class="mb-3 border-bottom pb-2">
@@ -21,11 +32,12 @@
                 <p>{{ c.content|nl2br }}</p>
 
                 {% if is_granted('ROLE_ADMIN') %}
-                    <form method="post" action="{{ path('comment_delete', {id: c.id}) }}"
-                          onsubmit="return confirm('Usunąć komentarz?');">
-                        <input type="hidden" name="_token"
-                               value="{{ csrf_token('delete-comment' ~ c.id) }}">
-                        <button class="btn btn-sm btn-danger">Usuń</button>
+                    <form method="post"
+                          action="{{ path('comment_delete', {id: c.id}) }}"
+                          style="display:inline"
+                          onsubmit="return confirm('Na pewno usunąć komentarz?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete-comment' ~ c.id) }}">
+                        <button class="btn btn-sm btn-danger">Usuń komentarz</button>
                     </form>
                 {% endif %}
             </li>
@@ -34,6 +46,7 @@
         {% endfor %}
     </ul>
 
+    {# Formularz dodawania komentarza (dla wszystkich) #}
     <h3>Dodaj komentarz</h3>
     {{ form_start(commentForm) }}
     {{ form_row(commentForm.nick) }}
@@ -41,5 +54,4 @@
     {{ form_row(commentForm.content) }}
     {{ form_row(commentForm.save) }}
     {{ form_end(commentForm) }}
-
 {% endblock %}
