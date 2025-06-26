@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.4",
+        "knplabs/knp-paginator-bundle": "^6.8",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
         "symfony/asset": "6.4.*",
@@ -83,20 +84,10 @@
             "@static-analysis"
         ],
         "post-update-cmd": [
-            "@auto-scripts",
-            "@static-analysis"
-        ],
-        "static-analysis": [
-            "./vendor/bin/phpcs --config-set installed_paths $(realpath vendor/escapestudios/symfony2-coding-standard)",
-            "./vendor/bin/phpcs --config-set default_standard Symfony",
-            "./vendor/bin/phpcs --standard=Symfony src/ --ignore=Kernel.php",
-            "./vendor/bin/phpcbf --standard=Symfony src/ --ignore=Kernel.php",
-            "./vendor/bin/php-cs-fixer fix src/ --rules=@Symfony,@PSR1,@PSR2,@PSR12",
-            "./vendor/bin/phpcbf --standard=Symfony tests/ --ignore=object-mapper.php",
-            "./vendor/bin/php-cs-fixer fix tests/ --rules=@Symfony,@PSR1,@PSR2,@PSR12",
-            "./vendor/bin/rector process src",
-            "./vendor/bin/rector process tests"
+            "@auto-scripts"
+
         ]
+
     },
     "conflict": {
         "symfony/symfony": "*"
