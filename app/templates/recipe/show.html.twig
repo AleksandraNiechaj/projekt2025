@@ -1,34 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recipe{% endblock %}
+{% block title %}{{ recipe.title }}{% endblock %}
 
 {% block body %}
-    <h1>Recipe</h1>
+    <h1>{{ recipe.title }}</h1>
+    <p class="text-muted">{{ recipe.createdAt|date('Y-m-d H:i') }}</p>
+    <div class="mb-4">{{ recipe.content|nl2br }}</div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ recipe.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ recipe.title }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ recipe.content }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ recipe.createdAt ? recipe.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {# …inne informacje o przepisie… #}
 
-    <a href="{{ path('app_recipe_index') }}">back to list</a>
+    <hr>
 
-    <a href="{{ path('app_recipe_edit', {'id': recipe.id}) }}">edit</a>
+    <h2>Komentarze</h2>
 
-    {{ include('recipe/_delete_form.html.twig') }}
+    <ul class="list-unstyled">
+        {% for c in recipe.comments %}
+            <li class="mb-3 border-bottom pb-2">
+                <strong>{{ c.nick }}</strong>
+                <small class="text-muted">{{ c.createdAt|date('Y-m-d H:i') }}</small>
+                <p>{{ c.content|nl2br }}</p>
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    <form method="post" action="{{ path('comment_delete', {id: c.id}) }}"
+                          onsubmit="return confirm('Usunąć komentarz?');">
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token('delete-comment' ~ c.id) }}">
+                        <button class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% else %}
+            <li>Brak komentarzy.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Dodaj komentarz</h3>
+    {{ form_start(commentForm) }}
+    {{ form_row(commentForm.nick) }}
+    {{ form_row(commentForm.email) }}
+    {{ form_row(commentForm.content) }}
+    {{ form_row(commentForm.save) }}
+    {{ form_end(commentForm) }}
+
 {% endblock %}
